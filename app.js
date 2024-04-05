@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoConnect = require("./util/mongodatabase").mongoConnect;
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
+const User = require("./models/user")
 
 const app = express();
 
