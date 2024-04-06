@@ -69,20 +69,51 @@ class User {
     const cartProductIndex = this.cart.items.findIndex((cp) => {
       return cp.productId.toString() === product._id.toString();
     });
-    const db = getDB()
+    const db = getDB();
     if (cartProductIndex >= 0) {
-      const updatedcart = this.cart
-      console.log("Pre DElete cart !",this.cart)
+      const updatedcart = this.cart;
+      console.log("Pre DElete cart !", this.cart);
       updatedcart.items.splice(cartProductIndex, 1);
-      console.log("UPDATED ONE !!",updatedcart)
+      console.log("UPDATED ONE !!", updatedcart);
       return db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(this._id) },
-        { $set: { cart: updatedcart } }
-      );
-
+        .collection("users")
+        .updateOne(
+          { _id: new ObjectId(this._id) },
+          { $set: { cart: updatedcart } }
+        );
     }
+  }
+
+  addOrder() {
+    const db = getDB();
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products,
+          user: {
+            _id: new mongodb.ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        return db.collection("orders").insertOne(order);
+      })
+      .then((result) => {
+        this.cart = { items: [] };
+        return db
+          .collection("users")
+          .updateOne(
+            { _id: new mongodb.ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
+  }
+
+  getOrders() {
+    const db = getDB();
+    return db
+      .collection("orders")
+      .find({ "user._id" : new ObjectId(this._id) })
+      .toArray();
   }
 
   static findById(userId) {
