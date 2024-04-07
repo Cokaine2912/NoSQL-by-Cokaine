@@ -20,10 +20,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("661163db09f5802fce7a35de")
+  User.findById("661230ee93080a47a6388a65")
     .then((user) => {
       console.log(user);
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch((err) => console.log(err));
@@ -40,6 +40,20 @@ mongoose
   )
   .then((result) => {
     console.log("START");
+
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Jos",
+          email: "jos@gmail.com",
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+      }
+    });
+
     app.listen(3000);
   })
   .catch((err) => {

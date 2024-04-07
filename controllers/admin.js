@@ -18,6 +18,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
+    userId: req.user,
   });
   product
     .save()
@@ -67,16 +68,15 @@ exports.postEditProduct = (req, res, next) => {
   //   updatedImageUrl,
   //   prodId
   // );
-  Product
-    .updateOne(
-      { _id: prodId },
-      {
-        title: updatedTitle,
-        price: updatedPrice,
-        description: updatedDesc,
-        imageUrl: updatedImageUrl,
-      }
-    )
+  Product.updateOne(
+    { _id: prodId },
+    {
+      title: updatedTitle,
+      price: updatedPrice,
+      description: updatedDesc,
+      imageUrl: updatedImageUrl,
+    }
+  )
     .then((result) => {
       console.log("UPDATED PRODUCT!");
       res.redirect("/admin/products");
@@ -86,7 +86,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    .populate("userId")
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
