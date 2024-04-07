@@ -113,10 +113,8 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
 
-  return Product.findById(prodId)
-    .then((product) => {
-      return req.user.deleteCartItem(product);
-    })
+  return req.user
+    .deleteCartItem(prodId)
     .then((result) => {
       console.log(result);
     })
