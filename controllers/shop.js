@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -130,15 +131,17 @@ exports.postOrder = (req, res, next) => {
   let fetchedCart;
   req.user
     .addOrder()
-    .then((result) => {
+    .then(() => {
+      console.log("Second Then !");
       res.redirect("/orders");
     })
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders()
+  Order.find({ "user.userId": req.user._id })
+    // req.user
+    // .getOrders()
     .then((orders) => {
       console.log("ORDERS LIST", orders);
       res.render("shop/orders", {
